@@ -18,26 +18,21 @@ public class Employee implements Comparable<Employee> {
     }
 
     @Override
+    public int compareTo(Employee employee) {
+        return _familyName.compareTo(employee._familyName);
+    }
+
+    @Override
     public String toString() {
         return _givenName + " " + _familyName;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)  {
-            return true;
-        } else if (obj == null) {
-            return false;
-        }
         if (obj instanceof Employee) {
             Employee other = (Employee)obj;
             return _familyName.equalsIgnoreCase(other._familyName) && _givenName.equalsIgnoreCase(other._givenName);
         }
         return false;
-    }
-
-    @Override
-    public int compareTo(Employee employee) {
-        return _familyName.compareTo(employee._familyName);
     }
 }

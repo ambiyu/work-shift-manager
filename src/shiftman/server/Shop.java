@@ -37,13 +37,11 @@ public class Shop {
         // if employee is not already assigned to a shift
         if (!_assignedShifts.containsKey(employee)) {
             _assignedShifts.put(employee, new ShiftRepository(shift));
-            shift.plusWorker();
             return;
         }
 
         ShiftRepository shiftList = _assignedShifts.get(employee);
         shiftList.add(shift);
-        shift.plusWorker();
     }
 
     public void addWorkingHours(TimePeriod workday) {
@@ -112,7 +110,18 @@ public class Shop {
         return _assignedShifts;
     }
 
+    public String status() {
+        String status = "EMPLOYEES: \n";
+        for (Employee employee : _staff) {
+            status = status + "\t" + employee + "\n";
+        }
 
+        System.out.println("SHIFTS: \n");
+        for (Shift shift : _shifts) {
+            status = status + "\t" + shift + "\n";
+        }
+        return status;
+    }
 
     @Override
     public String toString() {

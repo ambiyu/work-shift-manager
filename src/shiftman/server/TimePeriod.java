@@ -34,7 +34,7 @@ public class TimePeriod {
 
     public boolean overlaps(TimePeriod other) {
         if (_dayOfWeek.equals(other._dayOfWeek)) {
-            return (_startTime.isBefore(other._endTime) && other._startTime.isBefore(_endTime));
+            return _startTime.isBefore(other._endTime) && other._startTime.isBefore(_endTime);
         }
         return false;
     }
@@ -48,14 +48,8 @@ public class TimePeriod {
         return false;
     }
 
-    // order time periods by day of the week and then by start time.
     public WeekDays getEnumDay() {
-        for (WeekDays day : WeekDays.values()) {
-            if (_dayOfWeek.equals(day.toString())) {
-                return day;
-            }
-        }
-        return null; // will never reach, probably should change
+        return WeekDays.valueOf(_dayOfWeek);
     }
 
     @Override
@@ -65,9 +59,12 @@ public class TimePeriod {
 
     @Override
     public boolean equals(Object obj) {
-        TimePeriod other = (TimePeriod)obj;
-        return _dayOfWeek.equals(other._dayOfWeek) && _startTime.toString().equals(other._startTime.toString()) &&
-                _endTime.toString().equals(other._endTime.toString());
+        if (obj instanceof TimePeriod) {
+            TimePeriod other = (TimePeriod) obj;
+            return _dayOfWeek.equals(other._dayOfWeek) && _startTime.toString().equals(other._startTime.toString()) &&
+                    _endTime.toString().equals(other._endTime.toString());
+        }
+        return false;
     }
 
     public static class TimeComparator implements Comparator<TimePeriod> {

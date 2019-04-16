@@ -58,7 +58,7 @@ public class ShiftManServer implements ShiftMan{
                 if (shift.getManager() == null) {
                     shift.setManager(employee);
                 } else return "ERROR: There is already a manager assigned to this shift";
-            }
+            } else shift.plusWorker(); // increase worker count if not manager
             shop.assignStaff(shift, employee);
             return "";
         } catch (ShiftManException e) {
@@ -240,6 +240,6 @@ public class ShiftManServer implements ShiftMan{
     }
 
     public String displayRoster() {
-        return null;
+        return shop.status();
     }
 }

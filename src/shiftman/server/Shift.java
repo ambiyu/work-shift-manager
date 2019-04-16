@@ -41,23 +41,4 @@ public class Shift extends TimePeriod {
     public String getDay() {
         return super.getDay();
     }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)  {
-            return true;
-        } else if (obj == null) {
-            return false;
-        }
-        if (obj instanceof Shift) {
-            Shift other = (Shift)obj;
-            return super.equals(other);
-        }
-        return false;
-    }
 }
