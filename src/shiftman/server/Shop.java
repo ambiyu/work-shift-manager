@@ -9,7 +9,8 @@ public class Shop {
     private EmployeeRepository _staff;
     private ShiftRepository _shifts;
     /**
-     * Map of assigned shifts, where the key is the employee and the value is a list of shifts the employee is working in or managing
+     * Map of shifts assigned to an employee, where the key is the employee and the value
+     * is a list of shifts the employee is working in or managing
      */
     private Map<Employee, ShiftRepository> _assignedShifts;
 
@@ -63,10 +64,11 @@ public class Shop {
         }
 
         for (TimePeriod workday : _workingHours) {
-            if (shiftToCheck.getDay().equals(workday.getDay()) && !shiftToCheck.overlaps(workday)) {
-                throw new ShiftManException("ERROR: Given shift is not within the working hours");
+            if (shiftToCheck.isWithin(workday)) {
+                return;
             }
         }
+        throw new ShiftManException("ERROR: Given shift is not within the working hours");
     }
 
     public String getWorkingHours(String dayOfWeek) {
@@ -108,19 +110,6 @@ public class Shop {
 
     public Map<Employee, ShiftRepository> getAssignedShifts() {
         return _assignedShifts;
-    }
-
-    public String status() {
-        String status = "EMPLOYEES: \n";
-        for (Employee employee : _staff) {
-            status = status + "\t" + employee + "\n";
-        }
-
-        System.out.println("SHIFTS: \n");
-        for (Shift shift : _shifts) {
-            status = status + "\t" + shift + "\n";
-        }
-        return status;
     }
 
     @Override

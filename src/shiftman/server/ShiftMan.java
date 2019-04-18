@@ -3,7 +3,7 @@ package shiftman.server;
 import java.util.List;
 
 /**
- * Manage the assignment of staff for a shop to shifts for a working week.
+ * Manage a roster for a shop, that is, the assignment of staff for a shop to shifts for a working week. 
  * The shop is open for a single continuous period each day, the "working hours". Each
  * day is divided into a number of shifts.
  * A shift is a continuous period of time that has staff assigned to it for the
@@ -40,6 +40,14 @@ import java.util.List;
  * <b><tt>Monday[09:00-12:00]</tt></b>, <b><tt>Monday[14:00-17:00]</tt></b>, <b><tt>Friday[09:00-12:00]</tt></b>
  * <li>
  * All times are use the format hh:mm (zero-padded, no seconds).
+ * <li>
+ * <span style="color:blue">20190418 Updates marked in blue.</span>
+ * <li>
+ * <span style="color:blue">{@link #getRosterForDay(String)} and {@link #getRosterForWorker(String)} seem inconsistent
+ * as to what to do when there are no relevant shifts. In this case, the list returned is <b>empty</b>&mdash;there
+ * should be nothing in the list (so don't include shop name, staff member name, etc).</span>.
+ * 
+ *
  * </ol>
  * @author Ewan Tempero, Semester 1 2019, Assignment 2
  */
@@ -47,6 +55,8 @@ public interface ShiftMan {
 
 	/**
 	 * <b>(0 Marks)</b> Request that a new roster be started for the shop with the supplied name.
+	 * <span style="color:green">Any other methods called after a call to this method will apply to the
+	 * roster created by this method, until the next time this method is called.</span>
 	 * @param shopName The name of the shop the roster is for.
 	 * @return The status of the request as described in the notes.
 	 * Possible problems include: The supplied name is null or empty.
@@ -63,7 +73,8 @@ public interface ShiftMan {
 	 * @param endTime The end of the working day.
 	 * @return The status of the request as described in the notes.
 	 * Possible problems include: the value given for the day of week is invalid (must be
-	 * exactly the same as one of the 7 strings), the start time is after the end time, one or both times are invalid.
+	 * exactly the same as one of the 7 strings), the start time is <span style="color:blue">the same as or</span> after the end time, one or both times are invalid. 
+	 * (<span style="color:blue">Change to rule out working hours with no time</span>)
 	 */
 	public String setWorkingHours(String dayOfWeek, String startTime, String endTime);
 	
@@ -76,8 +87,8 @@ public interface ShiftMan {
 	 * @param minimumWorkers The number of workers needed for the shift.
 	 * @return The status of the request as described in the notes.
 	 * Possible problems include: the value given for the day of week is invalid (not one of the 7 strings 
-	 * given above), the start time is after the end time, one or both times are invalid, the shift is
-	 * not within the working hours, the shift overlaps with an already existing shift.
+	 * given above), the start time is <span style="color:blue">the same as or</span> after the end time, one or both times are invalid, the shift is
+	 * not within the working hours, the shift overlaps with an already existing shift. (<span style="color:blue">Change to rule out shifts with no time</span>).
 	 */
 	public String addShift(String dayOfWeek, String startTime, String endTime, String minimumWorkers);
 	
@@ -86,13 +97,13 @@ public interface ShiftMan {
 	 * To simplify the assignment, the (very) unrealistic assumption will 
 	 * be made that both the given and family names are not empty, and 
 	 * that every name is unique (case insensitive).
-	 * @param givenName The given name of the staff member
+	 * @param givenname The given name of the staff member
 	 * @param familyName The family name of the staff member
 	 * @return The status of the request as described in the notes.
 	 * <p>Possible problems include: one or both of the names are empty, or 
 	 * that there is someone with the supplied name (ignoring case) already registered. 
 	 */
-	public String registerStaff(String givenName, String familyName);
+	public String registerStaff(String givenname, String familyName);
 	
 	/**
 	 * <b>(2 Marks)</b> Request that the staff member specified by the supplied names be assigned to the shift specified by the supplied start and end times 
@@ -102,6 +113,8 @@ public interface ShiftMan {
 	 * @param givenName The given name of the staff member
 	 * @param familyName The family name of the staff member
 	 * @param isManager true if the staff member is to be the manager for the shift (and not a worker).
+	 * <span style="color:red">Note: This should have been declared of String type, not boolean, to be consistent with
+	 * the intent of the API. However this will not be changed&mdash;it will remain as boolean</span>
 	 * @return The status of the request as described in the notes.
 	 * <p>Possible problems include: the value given for the day of week is invalid (not one of the 7 strings 
 	 * given above), the start time is after the end time, one or both times are invalid, the specified
@@ -166,25 +179,26 @@ public interface ShiftMan {
 	 * the specified day and other relevant information.
 	 * <ul>
 	 * <li>The first entry should have the name of the shop the roster is for.</li> 
-	 * <li>The second entry should have the format: <b><tt>day of week</tt></b>" "<b><tt>working hours</tt></b>
+	 * <li>The second entry should have the format: <b><tt>day of week</tt></b>" "<em>working hours</em><span style="color:blue">, where the format for <em>working hours</em> is <b><tt>starttime</tt></b>"-"<b><tt>endtime</tt></b></span>. 
 	 * (there is a single space between the two elements).</li> 
 	 * <li>The remaining strings should give the relevant details of each shift.</li> 
 	 * <li>The format for a shift is <em>shift description</em>" "<em>manager description</em>" "<em>worker list</em></li>  
 	 * <li>The format of the shift description is: <b><tt>dayofweek</tt></b>"["<b><tt>starttime</tt></b>"-"<b><tt>endtime</tt></b>"]"
 	 * (that is, as described in the notes above).</li> 
-	 * <li>The format of the manager description is: " Manager: <b><tt>family name</tt></b>", "<b><tt>given name</tt></b> (i.e. family
-	 * name first) </li> 
+	 * <li>The format of the manager description is: " Manager:" <b><tt>family name</tt></b>", "<b><tt>given name</tt></b> (i.e. family
+	 * name first).  <span style="color:blue">If there is no manager, the format should be "[No manager assigned]". 
+	 * Note: Added closing quote after colon</span></li> 
 	 * <li>The format of the worker list is "["<em>list of worker names separated by ", "</em>"]" where the
-	 * worker name format is <b><tt>given name</tt></b>" "<b><tt>family name</tt></b></li> 
-	 * </ul> 
+	 * worker name format is <b><tt>given name</tt></b>" "<b><tt>family name</tt></b>. <span style="color:blue">The workers should be listed in order of family name. If there are no workers then the format should be "[No workers assigned]".</span></li> 
+	 * </ul>
 	 * The order of the shifts is in the order of day of the week, and then by start time.
-	 * If there are no such shifts, return an empty list.
-	 * <p>Possible problems include: the day is invalid, no shop name has been given.
+	 * If there are no such shifts, return an empty list. <span style="color:red">Empty list is inconsistent with requirement for first two entrys, however the requirement remains that in this case what is returned is an empty list.</span>
+	 * <p>Possible problems include: the day is invalid, no shop name has been given. <span style="color:red">Note: given the requirements for #newRoster(), it should not be possible for there to be no shop name</span>
 	 */
 	public List<String> getRosterForDay(String dayOfWeek);
 
 	/**
-	 * <b>(2 Marks)</b> Request the shifts that the staff member with the supplied name is assigned to (i.e. not as manager).
+	 * <b>(2 Marks)</b> Request the shifts that the staff member with the supplied name is assigned to (i.e not as manager).
 	 * @param workerName The name of the staff member in format: <b><tt>given name</tt></b>" "<b><tt>family name</tt></b>
 	 * @return a list of strings describing the shifts the staff member is a worker for.
 	 * <ul>
@@ -195,7 +209,7 @@ public interface ShiftMan {
 	 * The remaining strings are the shifts, one string per shift, using the format described in the notes above.
 	 * </ul>
 	 * The order of the shifts is in the order of day of the week, and then by start time.
-	 * If there are no such shifts, return an empty list.
+	 * If there are no such shifts, return an empty list. <span style="color:red">Empty list is inconsistent with the requirement that the first entry should be the worker's name, however the requirement remains that in this case what is returned is an empty list.</span>
 	 * <p>Possible problems include: the staff member is not registered.
 	 */
 	public List<String> getRosterForWorker(String workerName);
@@ -212,7 +226,7 @@ public interface ShiftMan {
 	 * The remaining strings are the shifts, one string per shift, using the format described in the notes above.
 	 * </ul>
 	 * The order of the shifts is in the order of day of the week, and then by start time.
-	 * If there are no such shifts, return an empty list.
+	 * If there are no such shifts, return an empty list. <span style="color:red">Empty list is inconsistent with requirement for first two entrys, however the requirement remains that in this case what is returned is an empty list.</span>
 	 * <P>Possible problems include: the staff member is not registered.
 	 */
 	public List<String> getShiftsManagedBy(String managerName);
@@ -222,7 +236,7 @@ public interface ShiftMan {
 	 * @return A string describing the issues.
 	 * 
 	 * <p><em>NOT MARKED</em> This will not be marked. It is provided as an example of 
-	 * how a client might get information from the shop, and may be useful for development.
+	 * how a client might get information from the server, and may be useful for development.
 	 */
 	public String reportRosterIssues();
 	
@@ -231,7 +245,7 @@ public interface ShiftMan {
 	 * @return A string describing the roster.
 	 * 
 	 * <em>NOT MARKED</em> This will not be marked. It is provided as an example of 
-	 * how a client might get information from the shop, and may be useful for development.
+	 * how a client might get information from the server, and may be useful for development.
 	 */
 	public String displayRoster();
 }

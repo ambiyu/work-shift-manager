@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class EmployeeRepository implements Repository<Employee>, Iterable<Employee> {
+public class EmployeeRepository implements Repository<Employee> {
     private List<Employee> _employees;
 
     public EmployeeRepository() {

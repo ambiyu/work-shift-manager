@@ -32,4 +32,10 @@ public class Time {
     public String toString() { // Not sure if needed due to Shift and OpeningHours class
         return String.format("%02d:%02d", _hour, _minute);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Time other = (Time)obj;
+        return _hour == other._hour && _minute == other._minute;
+    }
 }

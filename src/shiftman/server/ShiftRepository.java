@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-public class ShiftRepository implements Repository<Shift>, Iterable<Shift> {
+public class ShiftRepository implements Repository<Shift> {
 
     private List<Shift> _shifts;
 

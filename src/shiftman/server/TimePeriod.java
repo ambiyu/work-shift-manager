@@ -19,6 +19,10 @@ public class TimePeriod {
         if (_endTime.isBefore(_startTime)) {
             throw new ShiftManException("ERROR: Start time is after end time.");
         }
+        if (_startTime.equals(_endTime)) {
+            throw new ShiftManException("ERROR: Start time is the same as the end time");
+        }
+
         if (!isValidDay(dayOfWeek)) {
             throw new ShiftManException("ERROR: Day given (" + dayOfWeek + ") is invalid.");
         }
@@ -35,6 +39,14 @@ public class TimePeriod {
     public boolean overlaps(TimePeriod other) {
         if (_dayOfWeek.equals(other._dayOfWeek)) {
             return _startTime.isBefore(other._endTime) && other._startTime.isBefore(_endTime);
+        }
+        return false;
+    }
+
+    public boolean isWithin(TimePeriod other) {
+        if (_dayOfWeek.equals(other._dayOfWeek)) {
+            return (other._startTime.isBefore(_startTime) || _startTime.equals(other._startTime)) &&
+                    (_endTime.isBefore(other._endTime) || _endTime.equals(other._endTime));
         }
         return false;
     }

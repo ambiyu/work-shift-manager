@@ -14,7 +14,7 @@ public class Shift extends TimePeriod {
         _minWorkers = Integer.parseInt(minimumWorkers);
     }
 
-    public void plusWorker() {
+    public void plusWorkerCount() {
         _numWorkers++;
     }
 
@@ -36,9 +36,5 @@ public class Shift extends TimePeriod {
 
     public boolean hasWorkers() {
         return _numWorkers != 0;
-    }
-
-    public String getDay() {
-        return super.getDay();
     }
 }

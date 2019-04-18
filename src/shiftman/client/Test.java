@@ -16,6 +16,15 @@ public class Test {
             { "Tyrion", "Lannister" }
     };
 
+    private static final String[][] OPENING_HOURS = {
+            { "Friday", "09:00", "17:00", "", STAFF[0][0], STAFF[0][1], STAFF[1][0], STAFF[1][1] },
+            { "Sunday", "09:00", "17:00", "", STAFF[0][0], STAFF[0][1], STAFF[1][0], STAFF[1][1] },
+            { "Tuesday", "09:00", "17:00", "", STAFF[0][0], STAFF[0][1], STAFF[1][0], STAFF[1][1] },
+            { "Thursday", "09:00", "21:00", "late", STAFF[0][0], STAFF[0][1], STAFF[1][0], STAFF[1][1] },
+            { "Monday", "09:00", "17:00", "", STAFF[0][0], STAFF[0][1], STAFF[1][0], STAFF[1][1] },
+            { "Wednesday", "09:00", "17:00", "", STAFF[0][0], STAFF[0][1], STAFF[1][0], STAFF[1][1] },
+    };
+
     public static void main(String[] args) {
         ShiftMan scheduler = new ShiftManServer();
         scheduler.newRoster("Test Shop");
@@ -23,23 +32,25 @@ public class Test {
         for (String[] staff : STAFF) {
             scheduler.registerStaff(staff[0], staff[1]);
         }
-        System.out.println(scheduler.displayRoster());
-        System.out.println();
+
+        for (String[] dayspec: OPENING_HOURS) {
+            scheduler.setWorkingHours(dayspec[0], dayspec[1], dayspec[2]);
+        }
 
         //checkStatus("Add shift: ", scheduler.addShift("Sunday", "12:00", "22:00", "3"));
-        checkStatus("Add shift: ", scheduler.addShift("Saturday", "07:00", "12:00", "1"));
+        checkStatus("Add shift: ", scheduler.addShift("Sunday", "08:00", "15:00", "1"));
         //checkStatus("Add shift: ", scheduler.addShift("Tuesday", "11:00", "15:00", "1"));
         //checkStatus("Add shift: ", scheduler.addShift("Monday", "01:00", "07:00", "5"));
         System.out.println(scheduler.displayRoster());
         System.out.println();
 
-        checkStatus("Assign staff: ", scheduler.assignStaff("Saturday", "07:00", "12:00", "Jon", "Snow", true));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Jon", "Snow", true));
         report("Understaffed: ", scheduler.understaffedShifts());
         report("Overstaffed: ", scheduler.overstaffedShifts());
-        checkStatus("Assign staff: ", scheduler.assignStaff("Saturday", "07:00", "12:00", "Tyrion", "Lannister", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Tyrion", "Lannister", false));
         report("Understaffed: ", scheduler.understaffedShifts());
         report("Overstaffed: ", scheduler.overstaffedShifts());
-        checkStatus("Assign staff: ", scheduler.assignStaff("Saturday", "07:00", "12:00", "Bayta", "Darell", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Bayta", "Darell", false));
         report("Understaffed: ", scheduler.understaffedShifts());
         report("Overstaffed: ", scheduler.overstaffedShifts());
     }
