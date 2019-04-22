@@ -17,6 +17,10 @@ public class Employee implements Comparable<Employee> {
         return _familyName;
     }
 
+
+    /**
+     * Implementing comparable so that employees can be sorted in alphabetical order by their family name
+     */
     @Override
     public int compareTo(Employee employee) {
         return _familyName.compareTo(employee._familyName);

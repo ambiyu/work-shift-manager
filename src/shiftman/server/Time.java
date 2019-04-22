@@ -16,6 +16,9 @@ public class Time {
         }
     }
 
+    /**
+     * Converts to time to minutes
+     */
     private int getTotalMins() {
         return _hour * 60 + _minute;
     }

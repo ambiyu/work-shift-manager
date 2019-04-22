@@ -6,16 +6,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class ShiftRepository implements Repository<Shift> {
-
     private List<Shift> _shifts;
 
     public ShiftRepository() {
         _shifts = new ArrayList<>();
-    }
-
-    public ShiftRepository(Shift shift) {
-        _shifts = new ArrayList<>();
-        _shifts.add(shift);
     }
 
     public void add(Shift shift) {
@@ -26,9 +20,6 @@ public class ShiftRepository implements Repository<Shift> {
         return _shifts.contains(shift);
     }
 
-    /**
-     * Sorts the shifts in chronological order, by day and then starting time
-     */
     public void sort() {
         Collections.sort(_shifts, new TimePeriod.TimeComparator());
     }

@@ -20,8 +20,12 @@ public class EmployeeRepository implements Repository<Employee> {
         return _employees.contains(person);
     }
 
+    public int size() {
+        return _employees.size();
+    }
+
     /**
-     * Sorts the list of employees by their family name in alphabetical order
+     * Sorts the list of employees in alphabetical order by their family name
      */
     public void sort() {
         Collections.sort(_employees);
