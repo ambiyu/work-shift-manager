@@ -4,15 +4,15 @@ public class Time {
     private int _hour;
     private int _minute;
 
-    public Time(String time) throws ShiftManException {
+    public Time(String time) {
         if (!validFormat(time)) {
-            throw new ShiftManException("ERROR: Start/end time format is invalid");
+            throw new IllegalArgumentException("ERROR: Start/end time format is invalid");
         }
         _hour = Integer.parseInt(time.substring(0, 2));
         _minute = Integer.parseInt(time.substring(3, 5));
 
         if (_hour > 23 || _hour < 0 || _minute > 59 || _minute < 0) {
-            throw new ShiftManException("ERROR: Start/end time is invalid");
+            throw new IllegalArgumentException("ERROR: Start/end time is invalid");
         }
     }
 

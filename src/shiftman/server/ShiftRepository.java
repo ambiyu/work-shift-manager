@@ -22,17 +22,12 @@ public class ShiftRepository implements Repository<Shift> {
         _shifts.add(shift);
     }
 
-    public boolean contains(Shift shiftToCheck) {
-        for (Shift shift : _shifts) {
-            if (shift.equals(shiftToCheck)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean contains(Shift shift) {
+        return _shifts.contains(shift);
     }
 
     /**
-     * Sorts the shifts in chronological order
+     * Sorts the shifts in chronological order, by day and then starting time
      */
     public void sort() {
         Collections.sort(_shifts, new TimePeriod.TimeComparator());

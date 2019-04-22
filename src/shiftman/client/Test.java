@@ -33,6 +33,9 @@ public class Test {
             scheduler.registerStaff(staff[0], staff[1]);
         }
 
+        checkStatus("Set hours: ", scheduler.setWorkingHours("Sunday", "2:00", "14:00"));
+        checkStatus("setHours2 : ", scheduler.setWorkingHours("asd", "12:00", "14:00" ));
+
         for (String[] dayspec: OPENING_HOURS) {
             scheduler.setWorkingHours(dayspec[0], dayspec[1], dayspec[2]);
         }

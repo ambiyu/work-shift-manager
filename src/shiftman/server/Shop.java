@@ -1,6 +1,9 @@
 package shiftman.server;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Shop {
 
@@ -35,7 +38,7 @@ public class Shop {
     }
 
     public void assignStaff(Shift shift, Employee employee) {
-        // if employee is not already assigned to a shift
+        // if employee is not already assigned to a shift then add it to the assignedShifts map
         if (!_assignedShifts.containsKey(employee)) {
             _assignedShifts.put(employee, new ShiftRepository(shift));
             return;
@@ -45,12 +48,10 @@ public class Shop {
         shiftList.add(shift);
     }
 
-    public void addWorkingHours(TimePeriod workday) {
-        // Check if the day of week of this work day is already added. If so, then replace it.
+    public void addWorkingHours(TimePeriod workday) throws ShiftManException {
         for (TimePeriod workingHours : _workingHours) {
-            if (workday.getDay().equals(workingHours)) {
-                _workingHours.remove(workingHours);
-                break;
+            if (workday.getDay().toString().equals(workingHours)) {
+                throw new ShiftManException("ERROR: Working hours already set for " + workday.getDay());
             }
         }
         _workingHours.add(workday);
@@ -71,35 +72,64 @@ public class Shop {
         throw new ShiftManException("ERROR: Given shift is not within the working hours");
     }
 
-    public String getWorkingHours(String dayOfWeek) {
+    public String getWorkingHoursForDay(String dayOfWeek) {
         for (TimePeriod day : _workingHours) {
-            if (day.getDay().equals(dayOfWeek)) {
+            if (day.getDay().toString().equals(dayOfWeek)) {
                 return day.getTimePeriod();
             }
         }
         return null;
     }
 
-    public Shift getShift(String dayOfWeek, String startTime, String endTime) throws ShiftManException {
+    public Shift getShift(String dayOfWeek, String startTime, String endTime) {
         Shift shiftToCheck = new Shift(dayOfWeek, startTime, endTime);
         for (Shift shift : _shifts) {
             if (shiftToCheck.equals(shift)) {
                 return shift;
             }
         }
-        throw new ShiftManException("ERROR: Shift given (\"" + shiftToCheck + "\") does not exist");
+        return null;
     }
 
-    public Employee getEmployee(String fullName) throws ShiftManException{
+    public Employee getEmployee(String fullName) {
         for (Employee employee : _staff) {
             if (fullName.equals(employee.toString())) {
                 return employee;
             }
         }
-        throw new ShiftManException("ERROR: \"" + fullName + "\" is not registered.");
+        return null;
+    }
+
+    public List<String> getShiftsForEmployee(Employee employee, boolean isManager) {
+        List<String> shifts = new ArrayList<>();
+
+        if (isManager) { // get shifts for manager
+            for (Shift shift : _shifts) {
+                if (shift.getManager().equals(employee)) {
+                    shifts.add(shift.toString());
+                }
+            }
+        } else { // get shifts for worker
+            ShiftRepository shiftList = _assignedShifts.get(employee);
+            if (shiftList != null) { // shiftList is null if worker is not working in or managing any shifts
+                shiftList.sort();
+                for (Shift shift : shiftList) {
+                    if (shift.getManager() !=  null && !shift.getManager().equals(employee)) {
+                        shifts.add(shift.toString());
+                    }
+                }
+            }
+        }
+
+        if (!shifts.isEmpty()) {
+            shifts.add(0, employee.getFamilyName() + ", " + employee.getGivenName());
+        }
+        return shifts;
+
     }
 
     public EmployeeRepository getEmployeeRepository() {
+        _staff.sort();
         return _staff;
     }
 

@@ -5,11 +5,11 @@ public class Shift extends TimePeriod {
     private int _numWorkers;
     private int _minWorkers;
 
-    public Shift(String dayOfWeek, String startTime, String endTime) throws ShiftManException {
+    public Shift(String dayOfWeek, String startTime, String endTime) {
         super(dayOfWeek, startTime, endTime);
     }
 
-    public Shift(String dayOfWeek, String startTime, String endTime, String minimumWorkers) throws ShiftManException {
+    public Shift(String dayOfWeek, String startTime, String endTime, String minimumWorkers) {
         super(dayOfWeek, startTime, endTime);
         _minWorkers = Integer.parseInt(minimumWorkers);
     }

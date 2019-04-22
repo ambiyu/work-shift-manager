@@ -8,5 +8,7 @@ public interface Repository<T> extends Iterable<T>{
 
     boolean contains(T item);
 
+    void sort();
+
     Iterator<T> iterator();
 }
