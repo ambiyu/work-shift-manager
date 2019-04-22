@@ -17,24 +17,18 @@ public class EmployeeRepository implements Repository<Employee> {
     }
 
     public boolean contains(Employee person) {
-        for (Employee employee : _employees) {
-            if (employee.equals(person)) {
-                return true;
-            }
-        }
-        return false;
+        return _employees.contains(person);
+    }
+
+    public int size() {
+        return _employees.size();
     }
 
     /**
-     * Gets a list of registered staff in string format with the family names sorted in alphabetical order.
+     * Sorts the list of employees in alphabetical order by their family name
      */
-    public List<String> getStaffStr() {
+    public void sort() {
         Collections.sort(_employees);
-        List<String> staffList = new ArrayList<>();
-        for (Employee person : _employees) {
-            staffList.add(person.toString());
-        }
-        return staffList;
     }
 
     public Iterator<Employee> iterator() {
