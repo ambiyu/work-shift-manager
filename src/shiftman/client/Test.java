@@ -36,28 +36,33 @@ public class Test {
             scheduler.setWorkingHours(dayspec[0], dayspec[1], dayspec[2]);
         }
 
-        checkStatus("Add shift: ", scheduler.addShift("Sunday", "12:00", "17:00", "3"));
-        checkStatus("Add shift: ", scheduler.addShift("Sunday", "09:00", "12:00", "1"));
+        checkStatus("Add shift: ", scheduler.addShift("Sunday", "12:00", "14:00", "3"));
+        checkStatus("Add shift: ", scheduler.addShift("Sunday", "11:00", "12:00", "1"));
         checkStatus("Add shift: ", scheduler.addShift("Tuesday", "11:00", "15:00", "1"));
         checkStatus("Add shift: ", scheduler.addShift("Monday", "09:00", "12:00", "5"));
-        System.out.println(scheduler.displayRoster());
+        checkStatus("Add shift: ", scheduler.addShift("Sunday", "15:00", "17:00", "3"));
+        checkStatus("Add shift: ", scheduler.addShift("Sunday", "09:00", "11:00", "3"));
         System.out.println();
 
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Jon", "Snow", true));
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Tyrion", "Lannister", false));
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Bayta", "Darell", false));
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Hari", "Sheldon", false));
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "12:00", "Gaal", "Dornick", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "11:00", "Jon", "Snow", true));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "11:00", "Tyrion", "Lannister", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "11:00", "Bayta", "Darell", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "11:00", "Hari", "Sheldon", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "09:00", "11:00", "Gaal", "Dornick", false));
 
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "12:00", "17:00", "Gaal", "Dornick", false));
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "12:00", "17:00", "Tyrion", "Lannister", false));
-        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "12:00", "17:00", "Bayta", "Darell", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "12:00", "14:00", "Gaal", "Dornick", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "12:00", "14:00", "Tyrion", "Lannister", false));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "12:00", "14:00", "Bayta", "Darell", false));
 
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "15:00", "17:00", "Bayta", "Darell", false));
+
+        checkStatus("Assign staff: ", scheduler.assignStaff("Sunday", "11:00", "12:00", "Jon", "Snow", true));
 
         checkStatus("Assign staff: ", scheduler.assignStaff("Monday", "09:00", "12:00", "Tyrion", "Lannister", true));
-        checkStatus("Set working hours: ", scheduler.setWorkingHours("Monday", "12:00", "15:00"));
+        checkStatus("Assign staff: ", scheduler.assignStaff("Monday", "09:00", "12:00", "Tyrion", "Lannister", false));
         //System.out.println(scheduler.displayRoster());
         System.out.println(scheduler.getShiftsManagedBy("tyrion Lannister"));
+        System.out.println(scheduler.getRosterForDay("Sunday"));
 
 
     }

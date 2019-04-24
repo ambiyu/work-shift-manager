@@ -29,7 +29,6 @@ public class ShiftManServer implements ShiftMan {
         if (shop == null) { return "ERROR: no roster has been created"; }
         try {
             Shift shift = new Shift(dayOfWeek, startTime, endTime, minimumWorkers);
-            shop.validateShift(shift); // throws ShiftManException if invalid
             shop.addShift(shift);
             return "";
         } catch (IllegalArgumentException | ShiftManException e) {
@@ -142,21 +141,17 @@ public class ShiftManServer implements ShiftMan {
             output.add("ERROR: no roster has been created");
             return output;
         }
-
-        String managerName;
-        try{
-            DayOfWeek.valueOf(dayOfWeek);
-        } catch (IllegalArgumentException e) {
+        if (!DayOfWeek.isValidDay(dayOfWeek)) {
             output.add("ERROR: Day given (" + dayOfWeek + ") is invalid.");
             return output;
         }
 
         String hours = shop.getWorkingHours(dayOfWeek);
-        if (hours == null) {
-            //output.add("ERROR: Working hours not set for " + dayOfWeek);
+        if (hours == null) { // return empty list no roster/working hours not set for that day
             return output;
         }
 
+        String managerName;
         for (Shift shift : shop.getShiftRepository()) {
             List<String> workers = new ArrayList<>();
 

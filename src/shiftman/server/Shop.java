@@ -20,8 +20,6 @@ public class Shop {
 
     /**
      * Registers an employee to the shop. Also checks if employee is already registered
-     * @param employee the employee to be registered
-     * @throws ShiftManException if employee is already registered
      */
     public void addEmployee(Employee employee) throws ShiftManException {
         if (_staff.contains(employee)) {
@@ -31,27 +29,46 @@ public class Shop {
     }
 
     /**
-     * Adds the specified shift. The shift must not be added already
-     * @param shift the shift to be added
-     * @throws ShiftManException if shift already exists
+     * Adds the specified shift if it valid
      */
     public void addShift(Shift shift) throws ShiftManException {
         if (_shifts.contains(shift)) {
             throw new ShiftManException("ERROR: Shift \"" + shift + "\" already exists");
         }
-        _shifts.add(shift);
+
+        for (Shift existingShift : _shifts) {
+            if (shift.overlaps(existingShift)) {
+                throw new ShiftManException("ERROR: Given shift overlaps with an existing shift");
+            }
+        }
+
+        for (TimePeriod workday : _workingHours) {
+            if (shift.isWithin(workday)) {
+                _shifts.add(shift);
+                return;
+            }
+        }
+        throw new ShiftManException("ERROR: Given shift is not within the working hours");
     }
 
     /**
-     * Assigns an employee to a shift as a worker or manager
+     * Assigns an employee to a shift as a worker or manager. The employee must not already be assigned to the shift
+     * and if the employee is to be a manager, there must not already be a manager for the shift
      */
     public void assignStaff(Shift shift, Employee employee, boolean isManager) throws ShiftManException {
-        _assignedStaff.add(employee);
+        if ((shift.getManager() != null && employee.equals(shift.getManager())) || shift.getWorkers().contains(employee)) {
+            throw new ShiftManException("ERROR: " + employee + " is already assigned to this shift");
+        }
+
         if (isManager) {
             if (shift.getManager() == null) {
                 shift.setManager(employee);
             } else throw new ShiftManException("ERROR: A manager is already assigned to this shift") ;
-        } else shift.assignWorker(employee);
+        } else {
+            shift.assignWorker(employee);
+        }
+
+        _assignedStaff.add(employee);
     }
 
     /**
@@ -69,30 +86,12 @@ public class Shop {
     }
 
     /**
-     * Checks that a shift does not overlap with any existing shifts and that it is within the working hours of the shop.
-     */
-    public void validateShift(Shift shiftToCheck) throws ShiftManException {
-        for (Shift shift : _shifts) {
-            if (shiftToCheck.overlaps(shift)) {
-                throw new ShiftManException("ERROR: Given shift overlaps with an already existing shift");
-            }
-        }
-
-        for (TimePeriod workday : _workingHours) {
-            if (shiftToCheck.isWithin(workday)) {
-                return;
-            }
-        }
-        throw new ShiftManException("ERROR: Given shift is not within the working hours");
-    }
-
-    /**
      * Gets the shops working hours for the given day as a string. eg. 08:00-15:00
      * @return the working hours for that day. If there is no working hours set for that day, then return null
      */
     public String getWorkingHours(String dayOfWeek) {
         for (TimePeriod day : _workingHours) {
-            if (day.getDay().toString().equals(dayOfWeek)) {
+            if (dayOfWeek.equals(day.getDay().toString())) {
                 return day.getTimePeriod();
             }
         }
@@ -128,18 +127,18 @@ public class Shop {
     }
 
     /**
-     * Gets all the shifts assigned to the employee as a list of strings. You can either get all the shifts where
+     * Gets all the shifts assigned to the employee as a list of strings. You can either get the shifts where
      * the employee is a manager or where the employee is a worker.
-     * @param employee
-     * @param manager true if you want to get shifts where the employee is a manager.
-     *                false if you want the shift where the employee is a worker.
+     * @param employee the employee to get the shifts for
+     * @param forManager true if you want to get shifts where the employee is a manager.
+     *                   false if you want the shifts where the employee is a worker.
      * @return the list of shifts assigned to the employee (either as manager or worker). If there are no such shifts,
      *         then return an empty list
      */
-    public List<String> getShiftsForEmployee(Employee employee, boolean manager) {
+    public List<String> getShiftsForEmployee(Employee employee, boolean forManager) {
         List<String> shifts = new ArrayList<>();
 
-        if (manager) { // get shifts for manager
+        if (forManager) { // get shifts for manager
             for (Shift shift : _shifts) {
                 if (shift.getManager() == null) {
                     continue;

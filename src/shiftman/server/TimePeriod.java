@@ -8,13 +8,11 @@ public class TimePeriod {
     private Time _endTime;
 
     public TimePeriod(String dayOfWeek, String startTime, String endTime) {
-        // Check if dayOfWeek is a valid day
-        try{
-            _dayOfWeek = DayOfWeek.valueOf(dayOfWeek);
-        } catch (IllegalArgumentException e){
-            throw new IllegalArgumentException("ERROR: Day given (" + dayOfWeek + ") is invalid.", e);
+        if (!DayOfWeek.isValidDay(dayOfWeek)) {
+            throw new IllegalArgumentException("ERROR: Day given (" + dayOfWeek + ") is invalid.");
         }
 
+        _dayOfWeek = DayOfWeek.valueOf(dayOfWeek);
         _startTime = new Time(startTime);
         _endTime = new Time(endTime);
 
@@ -44,15 +42,18 @@ public class TimePeriod {
      */
     public boolean overlaps(TimePeriod other) {
         if (_dayOfWeek.equals(other._dayOfWeek)) {
-            return _startTime.isBefore(other._endTime) && other._startTime.isBefore(_endTime);
+            return (_startTime.isBefore(other._endTime) && other._startTime.isBefore(_endTime)) ||
+                    _startTime.equals(other._endTime) || _endTime.equals(other._startTime);
         }
         return false;
     }
 
     /**
-     * Checks if this time period is within the other time period
-     * @param other the other time period that is to be
-     * @return true if this time period is within the other, otherwise false
+     * Checks if this time period is within the other time period.
+     * This time period is within the other period if the day of the week is the same, the other start time is
+     * the same or before this start time, and the other end time is the same or before this end time.
+     * @param other the other time period
+     * @return true if this time period is within the other time period, otherwise false
      */
     public boolean isWithin(TimePeriod other) {
         if (_dayOfWeek.equals(other._dayOfWeek)) {
@@ -92,7 +93,7 @@ public class TimePeriod {
             DayOfWeek day1 = o1.getDay();
             DayOfWeek day2 = o2.getDay();
 
-            // compare the order of the days, with regards to the order of the DayOfWeek enum. ie. (Monday-Sunday)
+            // compare the order of the days to the order of the DayOfWeek enum. ie. should to sorted from Monday-Sunday
             if (day1.ordinal() > day2.ordinal()) {
                 return 1;
             } else if (day1.ordinal() < day2.ordinal()) {
