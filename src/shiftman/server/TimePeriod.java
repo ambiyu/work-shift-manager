@@ -32,6 +32,7 @@ public class TimePeriod {
      * Gets the time period without the day as a string. eg. "08:00-12:00"
      */
     public String getTimePeriod() {
+        //return _startTime + "-" + _endTime;
         return "[" + _startTime + "-" + _endTime + "]";
     }
 

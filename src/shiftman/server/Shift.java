@@ -39,17 +39,14 @@ public class Shift extends TimePeriod {
     }
 
     /**
-     * Determines whether the shift is overstaffed or understaffed
-     * @return 1 if there are more workers than the minimum workers required
-     *         -1 if there are less workers than required
-     *         0 if the number of workers equal the minimum workers required
+     * Finds out how many workers are needed to meet the minimum workers requirement for the shift.
+     * Used to check if the shift is overstaffed or understaffed
+     * @return the number of workers needed.
+     *         Positive number means the shift is understaffed
+     *         Negative number means the shift is overstaffed
      */
-    public int workerSituation() {
-        if (_workers.size() > _minWorkers) {
-            return 1;
-        } else if (_workers.size() < _minWorkers) {
-            return -1;
-        } else return 0;
+    public int workersNeeded() {
+        return _minWorkers - _workers.size();
     }
 
     public void setManager(Employee manager) {

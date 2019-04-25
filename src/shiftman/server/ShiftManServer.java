@@ -1,5 +1,6 @@
 package shiftman.server;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -15,7 +16,10 @@ public class ShiftManServer implements ShiftMan {
     }
 
     public String setWorkingHours(String dayOfWeek, String startTime, String endTime) {
-        if (shop == null) { return "ERROR: no roster has been created"; }
+        if (shop == null) {
+            return "ERROR: no roster has been created";
+        }
+
         try {
             TimePeriod workingHours = new TimePeriod(dayOfWeek, startTime, endTime);
             shop.setWorkingHours(workingHours);
@@ -26,7 +30,10 @@ public class ShiftManServer implements ShiftMan {
     }
 
     public String addShift(String dayOfWeek, String startTime, String endTime, String minimumWorkers) {
-        if (shop == null) { return "ERROR: no roster has been created"; }
+        if (shop == null) {
+            return "ERROR: no roster has been created";
+        }
+
         try {
             Shift shift = new Shift(dayOfWeek, startTime, endTime, minimumWorkers);
             shop.addShift(shift);
@@ -37,7 +44,10 @@ public class ShiftManServer implements ShiftMan {
     }
 
     public String registerStaff(String givenName, String familyName) {
-        if (shop == null) { return "ERROR: no roster has been created"; }
+        if (shop == null) {
+            return "ERROR: no roster has been created";
+        }
+
         if (givenName == null || familyName == null || givenName.isEmpty() || familyName.isEmpty()) {
             return "ERROR: Invalid name given.";
         }
@@ -52,7 +62,10 @@ public class ShiftManServer implements ShiftMan {
     }
 
     public String assignStaff(String dayOfWeek, String startTime, String endTime, String givenName, String familyName, boolean isManager) {
-        if (shop == null) { return "ERROR: no roster has been created"; }
+        if (shop == null) {
+            return "ERROR: no roster has been created";
+        }
+
         String fullName = givenName + " " + familyName;
         Employee employee = shop.getEmployee(fullName);
         if (employee == null) {
@@ -60,7 +73,7 @@ public class ShiftManServer implements ShiftMan {
         }
 
         try {
-            Shift shift = shop.getShift(dayOfWeek, startTime, endTime);
+            Shift shift = shop.getShift(dayOfWeek, startTime, endTime); // may throw IllegalArgumentException if invalid inputs
             if (shift == null) {
                 return "ERROR: Shift given does not exist";
             }
@@ -72,140 +85,81 @@ public class ShiftManServer implements ShiftMan {
     }
 
     public List<String> getRegisteredStaff() {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            for (Employee employee : shop.getEmployeeRepository()) {
-                output.add(employee.toString());
-            }
+        if (shop == null) {
+            return listError("ERROR: no roster has been created");
         }
-        return output;
+
+        return shop.getStaffList(true);
     }
 
     public List<String> getUnassignedStaff() {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            EmployeeRepository assignedStaff = shop.getAssignedEmployees();
-            for (Employee employee : shop.getEmployeeRepository()) {
-                if (!assignedStaff.contains(employee)) {
-                    output.add(employee.toString());
-                }
-            }
+        if (shop == null) {
+            return listError("ERROR: no roster has been created");
         }
-        return output;
+
+        return shop.getStaffList(false);
     }
 
     public List<String> shiftsWithoutManagers() {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            for (Shift shift : shop.getShiftRepository()) {
-                if (shift.getManager() == null) { // manager is null if there is no manager for that shift
-                    output.add(shift.toString());
-                }
-            }
+        if (shop == null) {
+            return listError("ERROR: no roster has been created");
         }
-        return output;
+
+        return shop.getShiftList(true, false, false);
     }
 
     public List<String> understaffedShifts() {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            for (Shift shift : shop.getShiftRepository()) {
-                if (shift.workerSituation() == -1) {
-                    output.add(shift.toString());
-                }
-            }
+        if (shop == null) {
+            return listError("ERROR: no roster has been created");
         }
-        return output;
+
+        return shop.getShiftList(false, true, false);
     }
 
     public List<String> overstaffedShifts() {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            for (Shift shift : shop.getShiftRepository()) {
-                if (shift.workerSituation() == 1) {
-                    output.add(shift.toString());
-                }
-            }
+        if (shop == null) {
+            listError("ERROR: no roster has been created");
         }
-        return output;
+
+        return shop.getShiftList(false, false, true);
     }
 
     public List<String> getRosterForDay(String dayOfWeek) {
-        List<String> output = new ArrayList<>();
         if (shop == null) {
-            output.add("ERROR: no roster has been created");
-            return output;
+            return listError("ERROR: no roster has been created");
         }
+
         if (!DayOfWeek.isValidDay(dayOfWeek)) {
-            output.add("ERROR: Day given (" + dayOfWeek + ") is invalid.");
-            return output;
+            return listError("ERROR: Day given (" + dayOfWeek + ") is invalid.");
         }
 
-        String hours = shop.getWorkingHours(dayOfWeek);
-        if (hours == null) { // return empty list no roster/working hours not set for that day
-            return output;
-        }
-
-        String managerName;
-        for (Shift shift : shop.getShiftRepository()) {
-            List<String> workers = new ArrayList<>();
-
-            if (dayOfWeek.equals(shift.getDay().toString())) {
-                Employee manager = shift.getManager();
-                if (manager != null) {
-                    managerName = " Manager:" + manager.getFamilyName() + ", " + manager.getGivenName();
-                } else managerName = " [No manager assigned]";
-
-                if (!shift.hasWorkers()) {
-                    output.add(shift + managerName + " " + "[No workers assigned]");
-                } else {
-                    for (Employee employee : shift.getWorkers()) {
-                        workers.add(employee.toString());
-                    }
-                    output.add(shift + managerName + " " + workers);
-                }
-            }
-        }
-
-        if (!output.isEmpty()) {
-            // insert shop name and working hours at the front of the list
-            output.add(0, shop.toString());
-            output.add(1, dayOfWeek + " " + hours);
-        }
-        return output;
+        return shop.getRosterForDay(dayOfWeek);
     }
 
     public List<String> getRosterForWorker(String workerName) {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            Employee worker = shop.getEmployee(workerName);
-            if (worker == null) {
-                output.add("ERROR: \"" + workerName + "\" is not registered.");
-            } else {
-                output = shop.getShiftsForEmployee(worker, false);
-            }
+        if (shop == null) {
+            return listError("ERROR: no roster has been created");
         }
-        return output;
+
+        Employee worker = shop.getEmployee(workerName);
+        if (worker == null) {
+            return listError("ERROR: \"" + workerName + "\" is not registered.");
+        }
+
+        return shop.getShiftsForEmployee(worker, false);
     }
 
     public List<String> getShiftsManagedBy(String managerName) {
-        List<String> output = new ArrayList<>();
-        if (shop == null) { output.add("ERROR: no roster has been created"); }
-        else {
-            Employee manager = shop.getEmployee(managerName);
-            if (manager == null) {
-                output.add("ERROR: \"" + managerName + "\" is not registered.");
-            } else {
-                output = shop.getShiftsForEmployee(manager, true);
-            }
+        if (shop == null) {
+            return listError("ERROR: no roster has been created");
         }
-        return output;
+
+        Employee manager = shop.getEmployee(managerName);
+        if (manager == null) {
+            listError("ERROR: \"" + managerName + "\" is not registered.");
+        }
+
+        return shop.getShiftsForEmployee(manager, true);
     }
 
     public String reportRosterIssues() {
@@ -228,5 +182,9 @@ public class ShiftManServer implements ShiftMan {
             }
         }
         return sb.toString();
+    }
+
+    private List<String> listError(String message) {
+        return Collections.singletonList(message);
     }
 }
