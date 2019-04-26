@@ -17,7 +17,6 @@ public class Employee implements Comparable<Employee> {
         return _familyName;
     }
 
-
     /**
      * Implementing comparable so that employees can be sorted in alphabetical order by their family name
      */

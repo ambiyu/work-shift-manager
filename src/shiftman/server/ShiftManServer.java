@@ -2,7 +2,6 @@ package shiftman.server;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
 public class ShiftManServer implements ShiftMan {
     Shop shop;
@@ -89,7 +88,7 @@ public class ShiftManServer implements ShiftMan {
             return listError("ERROR: no roster has been created");
         }
 
-        return shop.getStaffList(true);
+        return shop.getStaffList(true, false);
     }
 
     public List<String> getUnassignedStaff() {
@@ -97,7 +96,7 @@ public class ShiftManServer implements ShiftMan {
             return listError("ERROR: no roster has been created");
         }
 
-        return shop.getStaffList(false);
+        return shop.getStaffList(false, true);
     }
 
     public List<String> shiftsWithoutManagers() {

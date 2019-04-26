@@ -27,6 +27,9 @@ public class Time {
         return getTotalMins() < other.getTotalMins();
     }
 
+    /**
+     * Checks if the time is in the correct format. The correct format should be hh:mm
+     */
     private boolean validFormat(String time) {
         return time.matches("\\d{2}:\\d{2}");
     }

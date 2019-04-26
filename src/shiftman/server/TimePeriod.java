@@ -32,8 +32,7 @@ public class TimePeriod {
      * Gets the time period without the day as a string. eg. "08:00-12:00"
      */
     public String getTimePeriod() {
-        //return _startTime + "-" + _endTime;
-        return "[" + _startTime + "-" + _endTime + "]";
+        return _startTime + "-" + _endTime;
     }
 
     /**
@@ -50,10 +49,10 @@ public class TimePeriod {
     }
 
     /**
-     * Checks if this time period is within the other time period.
+     * Checks if this time period is within the other time period. Used to check if a shift is within the working hours.
      * This time period is within the other period if the day of the week is the same, the other start time is
      * the same or before this start time, and the other end time is the same or before this end time.
-     * @param other the other time period
+     * @param other the other time period (working hours)
      * @return true if this time period is within the other time period, otherwise false
      */
     public boolean isWithin(TimePeriod other) {

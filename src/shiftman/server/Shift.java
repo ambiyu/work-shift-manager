@@ -1,5 +1,7 @@
 package shiftman.server;
 
+import java.util.List;
+
 public class Shift extends TimePeriod {
     private Employee _manager;
     private EmployeeRepository _workers;
@@ -22,20 +24,24 @@ public class Shift extends TimePeriod {
         _workers = new EmployeeRepository();
     }
 
-    /**
-     * Assigns a worker to the shift
-     * @param worker the worker to be assigned
-     */
+    public void setManager(Employee manager) {
+        _manager = manager;
+    }
+
+    public Employee getManager() {
+        return _manager;
+    }
+
     public void assignWorker(Employee worker) {
         _workers.add(worker);
     }
 
-    /**
-     * Returns the workers assigned to the shift sorted in alphabetical order
-     */
-    public EmployeeRepository getWorkers() {
-        _workers.sort();
-        return _workers;
+    public boolean hasWorkers() {
+        return _workers.size() != 0;
+    }
+
+    public List<Employee> getWorkers() {
+        return _workers.getAllValues();
     }
 
     /**
@@ -47,17 +53,5 @@ public class Shift extends TimePeriod {
      */
     public int workersNeeded() {
         return _minWorkers - _workers.size();
-    }
-
-    public void setManager(Employee manager) {
-        _manager = manager;
-    }
-
-    public Employee getManager() {
-        return _manager;
-    }
-
-    public boolean hasWorkers() {
-        return _workers.size() != 0;
     }
 }

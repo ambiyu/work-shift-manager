@@ -1,8 +1,8 @@
 package shiftman.server;
 
-import java.util.Iterator;
+import java.util.List;
 
-public interface Repository<T> extends Iterable<T>{
+public interface Repository<T>{
 
     /**
      * Add a new item to the repository
@@ -18,9 +18,7 @@ public interface Repository<T> extends Iterable<T>{
     boolean contains(T item);
 
     /**
-     * Sorts all the values in the repository
+     * Returns a copy of all the values of the repository sorted.
      */
-    void sort();
-
-    Iterator<T> iterator();
+    List<T> getAllValues();
 }
