@@ -4,14 +4,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Shop {
+public class Roster {
     private String _shopName;
     private List<TimePeriod> _workingHours;
     private ShiftRepository _shifts;
     private EmployeeRepository _staff;
-    private EmployeeRepository _assignedStaff; // repository of staff assigned to shifts as a manager or worker
+    private EmployeeRepository _assignedStaff; // repository of staff assigned to a shift (as manager or worker)
 
-    public Shop(String shopName) {
+    public Roster(String shopName) {
         _shopName = shopName;
         _workingHours = new ArrayList<>();
         _shifts = new ShiftRepository();
@@ -108,65 +108,19 @@ public class Shop {
      * @return a list of unassigned staff or all registered staff
      */
     public List<String> getStaffList(boolean allStaff, boolean unassignedStaff) {
-        List<String> list = new ArrayList<>();
-
-        for (Employee employee : _staff.getAllValues()) {
-            if (allStaff || (unassignedStaff && !_assignedStaff.contains(employee))) {
-                list.add(employee.toString());
-            }
-        }
-        return list;
+        if (allStaff && !unassignedStaff) {
+            return _staff.getAllStaff();
+        } else if (unassignedStaff && !allStaff) {
+            return _staff.getUnassignedStaff(_assignedStaff);
+        } else return null;
     }
 
-    /**
-     * Gets all the shifts as a list of strings either without manager, understaffed, or overstaffed
-     * @param noManager true if you want a list of shifts without a manager assigned, otherwise false
-     * @param understaffed true if you want a list of understaffed shifts, otherwise false
-     * @param overstaffed true if you want a list of overstaffed shifts, otherwise false
-     * @return a list of shifts
-     */
     public List<String> getShiftList(boolean noManager, boolean understaffed, boolean overstaffed) {
-        List<String> list = new ArrayList<>();
-
-        for (Shift shift : _shifts.getAllValues()) {
-            if ((noManager && shift.getManager() == null) || (understaffed && shift.workersNeeded() > 0) ||
-                    (overstaffed && shift.workersNeeded() < 0)) {
-                list.add(shift.toString());
-            }
-        }
-        return list;
+        return _shifts.getShiftList(noManager, understaffed, overstaffed);
     }
 
-    /**
-     * Gets all the shifts assigned to the employee as a list of strings. You can either get the shifts where
-     * the employee is a manager or where the employee is a worker.
-     * @param employee the employee to get the shifts for
-     * @param asManager true if you want to get shifts where the employee is a manager.
-     *                  false if you want the shifts where the employee is a worker.
-     * @return the list of shifts assigned to the employee (either as manager or worker). If there are no such shifts,
-     *         then return an empty list
-     */
     public List<String> getShiftsForEmployee(Employee employee, boolean asManager) {
-        List<String> list = new ArrayList<>();
-
-        if (asManager) { // get shifts for manager
-            for (Shift shift : _shifts.getAllValues()) {
-                if (shift.getManager() != null && shift.getManager().equals(employee)) {
-                    list.add(shift.toString());
-                }
-            }
-        } else { // get shifts for worker
-            for (Shift shift : _shifts.getAllValues()) {
-                if (shift.hasWorkers() && shift.getWorkers().contains(employee)) { // if employee is working in that shift
-                    list.add(shift.toString());
-                }
-            }
-        }
-
-        if (!list.isEmpty()) {
-            list.add(0, employee.getFamilyName() + ", " + employee.getGivenName());
-        }
-        return list;
+        return _shifts.getShiftsForEmployee(employee, asManager);
     }
 
     public List<String> getRosterForDay(String dayOfWeek) {
@@ -175,30 +129,10 @@ public class Shop {
             return Collections.emptyList();
         }
 
-        List<String> roster = new ArrayList<>();
-        roster.add(0, _shopName);
-        roster.add(1, dayOfWeek + " " + workingHours);
-
-        String managerName;
-        List<Shift> shiftsForDay = _shifts.getShiftsForDay(DayOfWeek.valueOf(dayOfWeek));
-
-        for (Shift shift : shiftsForDay) {
-            Employee manager = shift.getManager();
-            if (manager != null) {
-                managerName = " Manager:" + manager.getFamilyName() + ", " + manager.getGivenName();
-            } else {
-                managerName = " [No manager assigned]";
-            }
-
-            if (shift.hasWorkers()) {
-                roster.add(shift + managerName + " " + shift.getWorkers());
-            } else {
-                roster.add(shift + managerName + " " + "[No workers assigned]");
-            }
-        }
-
-        if (roster.size() == 2) { // if there are no such shifts then return empty list
-            return Collections.emptyList();
+        List<String> roster = _shifts.getRosterForDay(DayOfWeek.valueOf(dayOfWeek));
+        if (!roster.isEmpty()) {
+            roster.add(0, _shopName);
+            roster.add(1, dayOfWeek + " " + workingHours);
         }
         return roster;
     }

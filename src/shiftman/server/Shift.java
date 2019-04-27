@@ -1,7 +1,5 @@
 package shiftman.server;
 
-import java.util.List;
-
 public class Shift extends TimePeriod {
     private Employee _manager;
     private EmployeeRepository _workers;
@@ -40,8 +38,8 @@ public class Shift extends TimePeriod {
         return _workers.size() != 0;
     }
 
-    public List<Employee> getWorkers() {
-        return _workers.getAllValues();
+    public EmployeeRepository getWorkers() {
+        return _workers;
     }
 
     /**

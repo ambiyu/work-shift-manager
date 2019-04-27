@@ -27,7 +27,7 @@ public class Test {
 
     public static void main(String[] args) {
         ShiftMan scheduler = new ShiftManServer();
-        scheduler.newRoster("Test Shop");
+        scheduler.newRoster("Test Roster");
 
         for (String[] staff : STAFF) {
             scheduler.registerStaff(staff[0], staff[1]);
@@ -35,6 +35,8 @@ public class Test {
         for (String[] dayspec: OPENING_HOURS) {
             scheduler.setWorkingHours(dayspec[0], dayspec[1], dayspec[2]);
         }
+
+        checkStatus("Set working hours: ", scheduler.setWorkingHours("Friday", "09:00", "12:00"));
 
         checkStatus("Add shift: ", scheduler.addShift("Sunday", "12:00", "14:00", "3"));
         checkStatus("Add shift: ", scheduler.addShift("Sunday", "11:00", "12:00", "1"));

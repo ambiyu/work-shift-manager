@@ -19,9 +19,14 @@ public class EmployeeRepository implements Repository<Employee> {
         return _employees.contains(person);
     }
 
-    public List<Employee> getAllValues() {
+    public List<String> getAllStaff() {
+        List<String> staff = new ArrayList<>(_employees.size());
         Collections.sort(_employees);
-        return Collections.unmodifiableList(new ArrayList<>(_employees));
+
+        for (Employee employee : _employees) {
+            staff.add(employee.toString());
+        }
+        return staff;
     }
 
     public int size() {
@@ -40,5 +45,22 @@ public class EmployeeRepository implements Repository<Employee> {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets either all the registered staff or staff not assigned to any shifts, as a list of strings.
+     * @param assignedStaff a list of staff assigned to a shift
+     * @return a list of unassigned staff or all registered staff
+     */
+    public List<String> getUnassignedStaff(EmployeeRepository assignedStaff) {
+        List<String> staff = new ArrayList<>();
+        Collections.sort(_employees);
+
+        for (Employee employee : _employees) {
+            if (!assignedStaff.contains(employee)) {
+                staff.add(employee.toString());
+            }
+        }
+        return staff;
     }
 }
