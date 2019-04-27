@@ -7,7 +7,7 @@ public class ShiftManServer implements ShiftMan {
     Roster roster;
 
     public String newRoster(String shopName) {
-        if (shopName.isEmpty() || shopName == null) {
+        if (shopName == null || shopName.isEmpty()) {
             return "ERROR: Cannot create a new roster due to invalid shop name.";
         }
         roster = new Roster(shopName);
@@ -66,13 +66,13 @@ public class ShiftManServer implements ShiftMan {
         }
 
         String fullName = givenName + " " + familyName;
-        Employee employee = roster.getEmployee(fullName);
+        Employee employee = roster.getEmployeeByName(fullName);
         if (employee == null) {
             return "ERROR: \"" + fullName + "\" is not registered.";
         }
 
         try {
-            Shift shift = roster.getShift(dayOfWeek, startTime, endTime); // may throw IllegalArgumentException if invalid inputs
+            Shift shift = roster.getShiftByPeriod(dayOfWeek, startTime, endTime); // may throw IllegalArgumentException if invalid inputs
             if (shift == null) {
                 return "ERROR: Shift given does not exist";
             }
@@ -88,7 +88,7 @@ public class ShiftManServer implements ShiftMan {
             return listError("ERROR: no roster has been created");
         }
 
-        return roster.getStaffList(true, false);
+        return roster.getRegisteredStaff();
     }
 
     public List<String> getUnassignedStaff() {
@@ -96,7 +96,7 @@ public class ShiftManServer implements ShiftMan {
             return listError("ERROR: no roster has been created");
         }
 
-        return roster.getStaffList(false, true);
+        return roster.getUnassignedStaff();
     }
 
     public List<String> shiftsWithoutManagers() {
@@ -117,7 +117,7 @@ public class ShiftManServer implements ShiftMan {
 
     public List<String> overstaffedShifts() {
         if (roster == null) {
-            listError("ERROR: no roster has been created");
+            return listError("ERROR: no roster has been created");
         }
 
         return roster.getShiftList(false, false, true);
@@ -140,7 +140,7 @@ public class ShiftManServer implements ShiftMan {
             return listError("ERROR: no roster has been created");
         }
 
-        Employee worker = roster.getEmployee(workerName);
+        Employee worker = roster.getEmployeeByName(workerName);
         if (worker == null) {
             return listError("ERROR: \"" + workerName + "\" is not registered.");
         }
@@ -153,9 +153,9 @@ public class ShiftManServer implements ShiftMan {
             return listError("ERROR: no roster has been created");
         }
 
-        Employee manager = roster.getEmployee(managerName);
+        Employee manager = roster.getEmployeeByName(managerName);
         if (manager == null) {
-            listError("ERROR: \"" + managerName + "\" is not registered.");
+            return listError("ERROR: \"" + managerName + "\" is not registered.");
         }
 
         return roster.getShiftsForEmployee(manager, true);

@@ -14,13 +14,6 @@ public class Shift extends TimePeriod {
         _minWorkers = Integer.parseInt(minimumWorkers);
     }
 
-    /**
-     * Used to create new shift objects for validation purposes
-     */
-    public Shift(String dayOfWeek, String startTime, String endTime) {
-        super(dayOfWeek, startTime, endTime);
-    }
-
     public void setManager(Employee manager) {
         _manager = manager;
     }

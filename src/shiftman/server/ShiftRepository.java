@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-public class ShiftRepository implements Repository<Shift> {
+public class ShiftRepository {
     private final List<Shift> _shifts;
 
     public ShiftRepository() {
@@ -20,7 +20,7 @@ public class ShiftRepository implements Repository<Shift> {
     }
 
     private void sort() {
-        Collections.sort(_shifts, new TimePeriod.TimeComparator());
+        Collections.sort(_shifts, new TimePeriod.PeriodComparator());
     }
 
     /**
@@ -49,7 +49,7 @@ public class ShiftRepository implements Repository<Shift> {
             }
         }
 
-        Collections.sort(shiftList, new TimePeriod.TimeComparator());
+        Collections.sort(shiftList, new TimePeriod.PeriodComparator());
         return Collections.unmodifiableList(shiftList);
     }
 

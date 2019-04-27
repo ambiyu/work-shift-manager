@@ -81,7 +81,7 @@ public class TimePeriod {
     /**
      * Comparator class to compare time periods, allowing time periods to be sorted.
      */
-    public static class TimeComparator implements Comparator<TimePeriod> {
+    public static class PeriodComparator implements Comparator<TimePeriod> {
         /**
          * Implementing the compare method for the comparator.
          * The time periods should be sorted in chronological order, first by the day of the week, and then by start time.

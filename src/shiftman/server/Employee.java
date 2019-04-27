@@ -1,8 +1,8 @@
 package shiftman.server;
 
 public class Employee implements Comparable<Employee> {
-    private String _givenName;
-    private String _familyName;
+    private final String _givenName;
+    private final String _familyName;
 
     public Employee(String givenName, String familyName) {
         _givenName = givenName;

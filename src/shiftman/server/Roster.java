@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Roster {
-    private String _shopName;
-    private List<TimePeriod> _workingHours;
-    private ShiftRepository _shifts;
-    private EmployeeRepository _staff;
-    private EmployeeRepository _assignedStaff; // repository of staff assigned to a shift (as manager or worker)
+    private final String _shopName;
+    private final List<TimePeriod> _workingHours;
+    private final ShiftRepository _shifts;
+    private final EmployeeRepository _staff;
+    private final EmployeeRepository _assignedStaff; // repository of staff assigned to a shift (as manager or worker)
 
     public Roster(String shopName) {
         _shopName = shopName;
@@ -89,30 +89,24 @@ public class Roster {
     }
 
     /**
-     * Gets the shift with the given parameters. Creates a temporary shift object for checking purposes
+     * Gets the shift with the given period. Creates a temporary TimePeriod object for checking purposes
      * @return the shift object. If no shift with the given parameters exist, then return null.
      */
-    public Shift getShift(String dayOfWeek, String startTime, String endTime) {
+    public Shift getShiftByPeriod(String dayOfWeek, String startTime, String endTime) {
         TimePeriod period = new TimePeriod(dayOfWeek, startTime, endTime);
         return _shifts.getShiftByPeriod(period);
     }
 
-    public Employee getEmployee(String fullName) {
+    public Employee getEmployeeByName(String fullName) {
         return _staff.getEmployeeByName(fullName);
     }
 
-    /**
-     * Gets either all the registered staff or staff not assigned to any shifts, as a list of strings.
-     * @param allStaff true if you want to get all registered staff, otherwise false
-     * @param unassignedStaff true if you want to only get unassigned staff, otherwise false
-     * @return a list of unassigned staff or all registered staff
-     */
-    public List<String> getStaffList(boolean allStaff, boolean unassignedStaff) {
-        if (allStaff && !unassignedStaff) {
-            return _staff.getAllStaff();
-        } else if (unassignedStaff && !allStaff) {
-            return _staff.getUnassignedStaff(_assignedStaff);
-        } else return null;
+    public List<String> getRegisteredStaff() {
+        return _staff.getAllStaff();
+    }
+
+    public List<String> getUnassignedStaff() {
+        return _staff.getUnassignedStaff(_assignedStaff);
     }
 
     public List<String> getShiftList(boolean noManager, boolean understaffed, boolean overstaffed) {
