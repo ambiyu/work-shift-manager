@@ -19,7 +19,6 @@ public class Shift extends TimePeriod {
      */
     public Shift(String dayOfWeek, String startTime, String endTime) {
         super(dayOfWeek, startTime, endTime);
-        _workers = new EmployeeRepository();
     }
 
     public void setManager(Employee manager) {

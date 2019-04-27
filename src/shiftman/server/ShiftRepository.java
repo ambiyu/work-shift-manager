@@ -24,13 +24,13 @@ public class ShiftRepository implements Repository<Shift> {
     }
 
     /**
-     * Gets a shift given a temporary shift object
-     * @param tempShift temporary shift object with a day, start time, and end time.
-     * @return the shift if an existing shift matches the temporary shift, otherwise null
+     * Gets a shift that has a particular period
+     * @param period the period to check
+     * @return the shift if an existing shift matches the period, otherwise null
      */
-    public Shift getShift(Shift tempShift) {
+    public Shift getShiftByPeriod(TimePeriod period) {
         for (Shift shift : _shifts) {
-            if (tempShift.equals(shift)) {
+            if (shift.equals(period)) {
                 return shift;
             }
         }
@@ -107,7 +107,6 @@ public class ShiftRepository implements Repository<Shift> {
 
     public List<String> getRosterForDay(DayOfWeek dayOfWeek) {
         List<String> roster = new ArrayList<>();
-        sort();
         String managerName;
 
         for (Shift shift : getShiftsForDay(dayOfWeek)) {

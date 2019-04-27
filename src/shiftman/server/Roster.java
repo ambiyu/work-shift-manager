@@ -93,8 +93,8 @@ public class Roster {
      * @return the shift object. If no shift with the given parameters exist, then return null.
      */
     public Shift getShift(String dayOfWeek, String startTime, String endTime) {
-        Shift tempShift = new Shift(dayOfWeek, startTime, endTime);
-        return _shifts.getShift(tempShift);
+        TimePeriod period = new TimePeriod(dayOfWeek, startTime, endTime);
+        return _shifts.getShiftByPeriod(period);
     }
 
     public Employee getEmployee(String fullName) {
